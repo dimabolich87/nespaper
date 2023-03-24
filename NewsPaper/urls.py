@@ -23,5 +23,6 @@ urlpatterns = [
 
     #Сдесь 'news/' это пишется в ЮРЛ, а 'news.urls'-это название приложения
     path('news/', include('news.urls')),
+    # path('news/create', include('news.urls')),
 
 ]

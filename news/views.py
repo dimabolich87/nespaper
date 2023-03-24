@@ -1,9 +1,11 @@
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
-from django.views.generic import ListView, DetailView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django_filters.views import FilterView
 
 from .filters import NewsFilter
+from .forms import PostForm
 from .models import Post
 
 
@@ -53,3 +55,33 @@ class SearchNews(FilterView):
         # Добавляем в контекст объект фильтрации.
         context['filterset'] = self.filterset
         return context
+
+class NewsCreate(CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'post_create.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.post_types = Post.news
+        return super().form_valid(form)
+
+class ArticlesCreate(CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'post_create.html'
+
+    def form_valid(self, form):
+        post = form.save(commit=False)
+        post.post_types = Post.article
+        return super().form_valid(form)
+
+class PostEdit(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'post_edit.html'
+
+class PostDelete(DeleteView):
+    model = Post
+    template_name = 'post_delete.html'
+    success_url = reverse_lazy('news')
