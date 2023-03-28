@@ -1,7 +1,10 @@
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django_filters.views import FilterView
 
 from .filters import NewsFilter
@@ -80,6 +83,9 @@ class PostEdit(UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'post_edit.html'
+
+class ProtectedView(LoginRequiredMixin, TemplateView):
+    template_name = 'prodected_page.html'
 
 class PostDelete(DeleteView):
     model = Post
