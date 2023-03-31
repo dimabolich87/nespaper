@@ -28,4 +28,5 @@ urlpatterns = [
     # path('news/create', include('news.urls')),
     path('accounts/', include('allauth.urls')),
 
+
 ]
