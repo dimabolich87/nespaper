@@ -1,17 +1,15 @@
 # Импортируем класс, который говорит нам о том,
 # что в этом представлении мы будем выводить список объектов из БД
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django_filters.views import FilterView
 
 from .filters import NewsFilter
 from .forms import PostForm
-from .models import Post, Category
+from .models import Post
 
 
 class Postlist(ListView):
@@ -93,23 +91,3 @@ class PostDelete(DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('news')
-
-class MyView(PermissionRequiredMixin, View):
-    permission_required = ('news.add_post', 'news.change_post')
-
-class CategoryListView(ListView):
-    model = Post
-    template_name = 'category_list.html'
-    context_object_name = 'category_news_list'
-
-    #фильтруем посты по категориям:
-    def get_queryset(self):
-        # метод вернет ошибку 404 , если такой категории не будет в бд
-        self.category = get_object_or_404(Category, id=self.kwargs['pk'])
-        queryset = Post.objects.filter(category=self.category).order.by('-date') #?
-        return queryset
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['is_not_subscriber'] = self.request.usrer not in self.category.subscribers.all()
-        context['category'] = self.category
-        return context
